@@ -79,7 +79,7 @@ A row is rejected, with the stated reason, if:
 
 ## Automated data quality tests
 
-Run after every load by `sql/04_dq_tests.sql`. Results are written to `monitoring.dq_results` (13 tests).
+Run after every load by `sql/04_dq_tests.sql`. Results are written to `monitoring.dq_results` (14 tests).
 
 | Category | Test | Severity |
 |---|---|---|
@@ -93,6 +93,7 @@ Run after every load by `sql/04_dq_tests.sql`. Results are written to `monitorin
 | Validity | fatality % between 0 and 100 | FAIL |
 | Freshness | ingested within 26 hours | FAIL |
 | Freshness | source data updated within 48 hours | FAIL |
+| Freshness | at least 1% of countries changed vs previous snapshot (stale-content check) | WARN |
 | Schema | all expected columns present in analytics | FAIL |
 | Quality | rejection rate at most 5% | WARN |
 | Quality | missing population at most 5% of rows | WARN |
@@ -105,10 +106,12 @@ The Make scenario `covid_pipeline_main` runs **daily at 06:00** and contains:
 2. **BigQuery Run a Query**: raw load (`sql/01_make_raw_load.sql`)
 3. **BigQuery Run a Query**: transformation (`sql/02_transform.sql`)
 4. **BigQuery Run a Query**: data quality tests (`sql/04_dq_tests.sql`)
-5. **BigQuery Run a Query**: quality gate (`sql/06_dq_gate.sql`)
+5. **BigQuery Run a Query**: quality gate plus report input (`sql/08_gate_and_report_input.sql`). It raises an error if any test fails; otherwise it returns the summary JSON
 6. **Gmail Send an email** on the gate module's **error route**, containing the failing test names and values
+7. **Google Gemini AI** writes the daily report from the summary JSON (`gemini-3.8-flash`, thinking set to low)
+8. **Gmail Send an email** delivers the report. The Gemini step has an Ignore error handler, so an AI outage never fails the data pipeline
 
-A full run is about 5 operations, so a daily schedule fits comfortably within the free plan (check current plan limits).
+A full run is about 7 operations, so a daily schedule fits comfortably within the free plan (check current plan limits).
 
 ## Demonstrated failure and alert
 
@@ -136,6 +139,19 @@ The bad table was then dropped and the pipeline returned to all tests passing.
 
 Top countries by cases: USA (about 111.8M), India (about 45.0M), France (about 40.1M), Germany (about 38.8M).
 
+## Finding: stale source content
+
+The daily freshness tests passed, yet a comparison of consecutive snapshots showed **0 of 231 countries with changed case counts**: the API advances its `updated` timestamps while returning the same numbers. Timestamp-based freshness checks cannot see this. It was caught by comparing content across snapshots, now a permanent WARN test (`counts_changed_vs_previous_snapshot`), and the AI report flags it in plain language. See `docs/sample_gemini_report.md`.
+
+## Daily AI-generated report
+
+`sql/07_report_input.sql` builds one compact JSON summary (run stats, test results, rejection reasons, continent totals, top countries, day-over-day comparison). A Gemini model turns it into a short report with a verdict, anomalies, insights and recommendations. The prompt forbids inventing numbers and was checked against the source data. Design notes:
+
+- Only a small summary is sent to the model, not raw rows: cheaper, faster, and grounded in computed figures.
+- The prompt is short on purpose. A longer prompt timed out on the free tier (`ModuleTimeoutError`); a shorter prompt with thinking set to low succeeds.
+- The report step is optional: an Ignore error handler keeps the data pipeline green if the model is slow or returns an overload error (HTTP 503 was observed).
+- GPT-4 was the brief's suggestion; Gemini was used because an OpenAI API key needs prepaid credit and Gemini has a free tier.
+
 ## Known limitations (sandbox)
 
 The BigQuery **sandbox blocks DML** (`INSERT`, `UPDATE`, `DELETE`, `MERGE`) unless billing is enabled, and billing was not available. The design was adapted:
@@ -146,6 +162,8 @@ The BigQuery **sandbox blocks DML** (`INSERT`, `UPDATE`, `DELETE`, `MERGE`) unle
 - The alert covers `FAIL` results only; `WARN` results are recorded but do not email.
 - Sandbox tables expire after 60 days by default.
 - The error route uses the Ignore directive, so a failed gate is signalled by email rather than by marking the scenario as failed.
+- The AI report depends on a free-tier model that can time out or return overload errors; there is no automatic retry.
+- Day-over-day comparison needs at least two snapshots; the stale-content test passes automatically when there is no previous snapshot.
 
 **At production scale** I would enable billing, append to a single partitioned raw table, use `MERGE` for incremental loads, keep a history of test results, and move transformations to dbt or Dataform with orchestration in Airflow or Cloud Composer.
 
@@ -157,7 +175,7 @@ The BigQuery **sandbox blocks DML** (`INSERT`, `UPDATE`, `DELETE`, `MERGE`) unle
 - [x] **Phase 4** Transformation SQL: staging, rejected records, analytics, run log
 - [x] **Phase 5** Automated data quality tests and `dq_results`
 - [x] **Phase 6** Full scenario in Make, quality gate, email alert, daily 06:00 schedule
-- [ ] **Phase 7** GPT data quality report (bonus)
+- [ ] **Phase 7** AI data quality report (bonus): report generated and emailed; finishing email formatting and retry after a Gemini overload error
 - [ ] **Phase 8** Architecture diagram export, Make blueprint export, design document
 - [ ] **Phase 9** Demo video
 
@@ -170,6 +188,9 @@ The BigQuery **sandbox blocks DML** (`INSERT`, `UPDATE`, `DELETE`, `MERGE`) unle
 | Tables created but empty (0 rows) | API `Data` value was not mapped into the BigQuery query, so `UNNEST` of an empty string returned nothing and BigQuery still reported success | Re-mapped the HTTP `Data` field; verified by inspecting the module's Input; confirmed with row counts |
 | Need to alert on test failures without branching on query output | Make cannot easily read BigQuery result rows into a decision | Quality gate query raises `ERROR()` on failure; Make's error route sends the email |
 | Bad test data hidden by a newer good run | "Latest run" is chosen by table-name suffix | Demo table is named with a timestamp later than the run being triggered |
+| Gemini module timed out (`ModuleTimeoutError`) | Long prompt plus model thinking time exceeded Make's limit | Shortened the prompt, set thinking to low, added an Ignore error handler |
+| Gemini returned 503 (high demand) | Google-side capacity on the free tier | Treated the report as optional so the pipeline stays green; retry later |
+| Freshness tests passed but data had not changed | The API updates timestamps without updating counts | Added a content-based day-over-day WARN test |
 
 **Lesson:** a successful job status does not prove data landed. The row-count reconciliation tests exist for exactly this reason.
 
@@ -185,9 +206,10 @@ ehealth-data-pipeline/
 │   ├── 04_dq_tests.sql           # automated data quality tests -> dq_results
 │   ├── 05_inject_bad_data.sql    # demo: deliberately bad run
 │   ├── 06_dq_gate.sql            # quality gate that triggers the alert
-│   └── 07_report_input.sql       # summary JSON for the GPT report (Phase 7)
+│   ├── 07_report_input.sql       # summary JSON for the AI report
+│   └── 08_gate_and_report_input.sql  # gate + summary, the query the last Make BigQuery module runs
 ├── workflow/                     # Make blueprint JSON (Phase 8)
-├── docs/                         # design document (Phase 8)
+├── docs/                         # sample AI report, design document (Phase 8)
 └── screenshots/                  # evidence for the demo and README
 ```
 
