@@ -1,0 +1,2300 @@
+{
+    "name": "covid_pipeline_main",
+    "flow": [
+        {
+            "id": 1,
+            "module": "placeholder:Placeholder",
+            "filter": null,
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 0
+                }
+            }
+        },
+        {
+            "id": 2,
+            "module": "http:MakeRequest",
+            "version": 4,
+            "parameters": {
+                "tlsType": "",
+                "authenticationType": "noAuth"
+            },
+            "mapper": {
+                "url": "https://disease.sh/v3/covid-19/countries",
+                "method": "get",
+                "timeout": "60",
+                "shareCookies": false,
+                "parseResponse": false,
+                "allowRedirects": true,
+                "stopOnHttpError": true,
+                "requestCompressedContent": true
+            },
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 0
+                },
+                "setupValidation": {
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    },
+                    "version": 1,
+                    "configuration": "6ffa5c158a4017c4"
+                },
+                "restore": {
+                    "expect": {
+                        "method": {
+                            "mode": "chose",
+                            "label": "GET"
+                        },
+                        "headers": {
+                            "mode": "chose"
+                        },
+                        "contentType": {
+                            "label": "Empty"
+                        },
+                        "shareCookies": {
+                            "mode": "chose"
+                        },
+                        "parseResponse": {
+                            "mode": "chose"
+                        },
+                        "allowRedirects": {
+                            "mode": "chose"
+                        },
+                        "queryParameters": {
+                            "mode": "chose"
+                        },
+                        "stopOnHttpError": {
+                            "mode": "chose"
+                        },
+                        "requestCompressedContent": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "tlsType": {
+                            "label": "Empty"
+                        },
+                        "authenticationType": {
+                            "label": "No authenticationUse when no credentials are required for the request."
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "authenticationType",
+                        "type": "select",
+                        "label": "Authentication type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "noAuth",
+                                "apiKey",
+                                "basicAuth",
+                                "oAuth"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "tlsType",
+                        "type": "select",
+                        "label": "Transport layer security (TLS)",
+                        "validate": {
+                            "enum": [
+                                "mTls",
+                                "tls"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "proxyKeychain",
+                        "type": "keychain:proxy",
+                        "label": "Proxy"
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "url",
+                        "type": "url",
+                        "label": "URL",
+                        "required": true
+                    },
+                    {
+                        "name": "method",
+                        "type": "select",
+                        "label": "Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "get",
+                                "head",
+                                "post",
+                                "put",
+                                "patch",
+                                "delete",
+                                "options"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "headers",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name",
+                                    "required": true,
+                                    "validate": {
+                                        "pattern": "^[-!#$%&'*+.^_`|~0-9A-Za-z]+$"
+                                    }
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Header"
+                        },
+                        "type": "array",
+                        "label": "Headers"
+                    },
+                    {
+                        "name": "queryParameters",
+                        "spec": {
+                            "name": "value",
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name",
+                                    "required": true
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Parameter"
+                        },
+                        "type": "array",
+                        "label": "Query parameters"
+                    },
+                    {
+                        "name": "contentType",
+                        "type": "select",
+                        "label": "Body content type",
+                        "validate": {
+                            "enum": [
+                                "json",
+                                "multipart",
+                                "urlEncoded",
+                                "custom"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "parseResponse",
+                        "type": "boolean",
+                        "label": "Parse response",
+                        "required": true
+                    },
+                    {
+                        "name": "stopOnHttpError",
+                        "type": "boolean",
+                        "label": "Return error if HTTP request fails",
+                        "required": true
+                    },
+                    {
+                        "name": "timeout",
+                        "type": "uinteger",
+                        "label": "Timeout",
+                        "validate": {
+                            "max": 300,
+                            "min": 1
+                        }
+                    },
+                    {
+                        "name": "allowRedirects",
+                        "type": "boolean",
+                        "label": "Allow redirects",
+                        "required": true
+                    },
+                    {
+                        "name": "shareCookies",
+                        "type": "boolean",
+                        "label": "Share cookies with other HTTP modules",
+                        "required": true
+                    },
+                    {
+                        "name": "requestCompressedContent",
+                        "type": "boolean",
+                        "label": "Request compressed content",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "data",
+                        "type": "any",
+                        "label": "Data"
+                    },
+                    {
+                        "name": "statusCode",
+                        "type": "number",
+                        "label": "Status Code"
+                    },
+                    {
+                        "name": "headers",
+                        "spec": [
+                            {
+                                "name": "content-length",
+                                "type": "text",
+                                "label": "Content-Length"
+                            },
+                            {
+                                "name": "content-encoding",
+                                "type": "text",
+                                "label": "Content-Encoding"
+                            },
+                            {
+                                "name": "content-type",
+                                "type": "text",
+                                "label": "Content-Type"
+                            },
+                            {
+                                "name": "server",
+                                "type": "text",
+                                "label": "Server"
+                            },
+                            {
+                                "name": "cache-control",
+                                "type": "text",
+                                "label": "Cache-Control"
+                            },
+                            {
+                                "name": "set-cookie",
+                                "spec": {
+                                    "type": "text"
+                                },
+                                "type": "array",
+                                "label": "Set-Cookie"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Headers"
+                    }
+                ],
+                "advanced": true
+            }
+        },
+        {
+            "id": 5,
+            "module": "google-bigquery:writeQuery",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 11405725
+            },
+            "mapper": {
+                "query": "DECLARE payload_json STRING DEFAULT r'''{{2.data}}''';\n\nEXECUTE IMMEDIATE FORMAT(\"\"\"\n  CREATE TABLE `ehealth-pipeline.raw.covid_raw_%s` AS\n  SELECT\n    CURRENT_TIMESTAMP() AS ingested_at,\n    'https://disease.sh/v3/covid-19/countries' AS source_url,\n    item AS payload\n  FROM UNNEST(JSON_EXTRACT_ARRAY(@j)) AS item\n\"\"\", FORMAT_TIMESTAMP('%Y%m%d_%H%M%S', CURRENT_TIMESTAMP()))\nUSING payload_json AS j;",
+                "dryRun": false,
+                "prefix": "#standardSQL",
+                "project": "ehealth-pipeline",
+                "timeoutMs": "60000",
+                "useQueryCache": false,
+                "useInt64Timestamp": false
+            },
+            "metadata": {
+                "designer": {
+                    "x": 600,
+                    "y": 0
+                },
+                "setupValidation": {
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    },
+                    "version": 1,
+                    "configuration": "5818271066fa34d5"
+                },
+                "restore": {
+                    "expect": {
+                        "dryRun": {
+                            "mode": "chose"
+                        },
+                        "prefix": {
+                            "mode": "chose",
+                            "label": "Runs the query using standard SQL"
+                        },
+                        "project": {
+                            "mode": "chose",
+                            "label": "ehealth-pipeline",
+                            "nested": [
+                                {
+                                    "help": "Specifies the **Default Dataset** to assume for any table in **Query** field. If not set, you must specify a table in the format `{datasetId}.{tableId}` in **Query** field.",
+                                    "name": "datasetId",
+                                    "type": "select",
+                                    "label": "Default Dataset ID",
+                                    "options": {
+                                        "store": "rpc://google-bigquery/1/listDatasets",
+                                        "nested": [
+                                            {
+                                                "help": "Specifying the **Table ID** will allow the module to generate an interface for mappable rows and improve your mapping experience.",
+                                                "name": "table",
+                                                "type": "select",
+                                                "label": "Table ID",
+                                                "options": "rpc://google-bigquery/1/listTables"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "datasetId": {
+                            "mode": "chose"
+                        },
+                        "useQueryCache": {
+                            "mode": "chose"
+                        },
+                        "useInt64Timestamp": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            },
+                            "label": "Alpha's Google connection (alphagideon001@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "project",
+                        "type": "select",
+                        "label": "Project ID",
+                        "required": true
+                    },
+                    {
+                        "name": "query",
+                        "type": "text",
+                        "label": "Query",
+                        "required": true
+                    },
+                    {
+                        "name": "prefix",
+                        "type": "select",
+                        "label": "Query Prefix",
+                        "validate": {
+                            "enum": [
+                                "#standardSQL"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "timeoutMs",
+                        "type": "uinteger",
+                        "label": "Timeout (in Milliseconds)"
+                    },
+                    {
+                        "name": "dryRun",
+                        "type": "boolean",
+                        "label": "Dry Run"
+                    },
+                    {
+                        "name": "useQueryCache",
+                        "type": "boolean",
+                        "label": "Use Query Cache"
+                    },
+                    {
+                        "name": "useInt64Timestamp",
+                        "type": "boolean",
+                        "label": "Use Int64 Timestamp"
+                    },
+                    {
+                        "name": "maximumBytesBilled",
+                        "type": "text",
+                        "label": "Maximum Bytes Billed",
+                        "validate": {
+                            "pattern": "^\\d*$"
+                        }
+                    },
+                    {
+                        "name": "datasetId",
+                        "type": "select",
+                        "label": "Default Dataset ID"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "kind",
+                        "type": "text",
+                        "label": "Kind"
+                    },
+                    {
+                        "name": "schema",
+                        "spec": [
+                            {
+                                "name": "fields",
+                                "spec": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Name"
+                                    },
+                                    {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                    },
+                                    {
+                                        "name": "mode",
+                                        "type": "text",
+                                        "label": "Mode"
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Fields"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Schema"
+                    },
+                    {
+                        "name": "jobReference",
+                        "spec": [
+                            {
+                                "name": "projectId",
+                                "type": "text",
+                                "label": "Project ID"
+                            },
+                            {
+                                "name": "jobId",
+                                "type": "text",
+                                "label": "Job ID"
+                            },
+                            {
+                                "name": "location",
+                                "type": "text",
+                                "label": "Location"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Job Reference"
+                    },
+                    {
+                        "name": "totalRows",
+                        "type": "uinteger",
+                        "label": "Total Rows"
+                    },
+                    {
+                        "name": "rows",
+                        "spec": [
+                            {
+                                "name": "f",
+                                "spec": [
+                                    {
+                                        "name": "v",
+                                        "type": "text",
+                                        "label": "Value"
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Fields"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Rows"
+                    },
+                    {
+                        "name": "totalBytesProcessed",
+                        "type": "uinteger",
+                        "label": "Total Bytes Processed"
+                    },
+                    {
+                        "name": "jobComplete",
+                        "type": "boolean",
+                        "label": "Job Complete"
+                    },
+                    {
+                        "name": "cacheHit",
+                        "type": "boolean",
+                        "label": "Cache Hit"
+                    },
+                    {
+                        "name": "mappableRows",
+                        "spec": {
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Mappable Rows"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 7,
+            "module": "google-bigquery:writeQuery",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 11405725
+            },
+            "mapper": {
+                "query": "-- Transformation: raw -> staging -> rejected / analytics / run log.\n-- Safe to re-run: every statement is CREATE OR REPLACE (idempotent).\n\n-- 1) STAGING: flatten JSON, cast types, flag bad rows (all runs, full history)\nCREATE OR REPLACE TABLE `ehealth-pipeline.staging.covid_countries_stg` AS\nWITH typed AS (\n  SELECT\n    _TABLE_SUFFIX AS run_id,\n    ingested_at,\n    TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(payload, '$.updated') AS INT64)) AS source_updated_at,\n    DATE(TIMESTAMP_MILLIS(SAFE_CAST(JSON_VALUE(payload, '$.updated') AS INT64))) AS snapshot_date,\n    NULLIF(TRIM(JSON_VALUE(payload, '$.country')), '') AS country,\n    UPPER(NULLIF(TRIM(JSON_VALUE(payload, '$.countryInfo.iso2')), '')) AS iso2,\n    UPPER(NULLIF(TRIM(JSON_VALUE(payload, '$.countryInfo.iso3')), '')) AS iso3,\n    NULLIF(TRIM(JSON_VALUE(payload, '$.continent')), '') AS continent,\n    SAFE_CAST(JSON_VALUE(payload, '$.countryInfo.lat') AS FLOAT64) AS latitude,\n    SAFE_CAST(JSON_VALUE(payload, '$.countryInfo.long') AS FLOAT64) AS longitude,\n    SAFE_CAST(JSON_VALUE(payload, '$.population') AS INT64) AS population,\n    SAFE_CAST(JSON_VALUE(payload, '$.cases') AS INT64) AS cases,\n    SAFE_CAST(JSON_VALUE(payload, '$.todayCases') AS INT64) AS today_cases,\n    SAFE_CAST(JSON_VALUE(payload, '$.deaths') AS INT64) AS deaths,\n    SAFE_CAST(JSON_VALUE(payload, '$.todayDeaths') AS INT64) AS today_deaths,\n    SAFE_CAST(JSON_VALUE(payload, '$.recovered') AS INT64) AS recovered,\n    SAFE_CAST(JSON_VALUE(payload, '$.active') AS INT64) AS active,\n    SAFE_CAST(JSON_VALUE(payload, '$.critical') AS INT64) AS critical,\n    SAFE_CAST(JSON_VALUE(payload, '$.tests') AS INT64) AS tests\n  FROM `ehealth-pipeline.raw.covid_raw_*`\n)\nSELECT\n  *,\n  CASE\n    WHEN country IS NULL THEN 'missing_country'\n    WHEN snapshot_date IS NULL THEN 'missing_or_invalid_updated'\n    WHEN snapshot_date > CURRENT_DATE() THEN 'future_date'\n    WHEN cases IS NULL THEN 'missing_cases'\n    WHEN cases < 0 OR deaths < 0 THEN 'negative_count'\n    WHEN deaths > cases THEN 'deaths_exceed_cases'\n  END AS reject_reason\nFROM typed;\n\n-- 2) REJECTED RECORDS: everything that failed a rule\nCREATE OR REPLACE TABLE `ehealth-pipeline.monitoring.rejected_records` AS\nSELECT run_id, ingested_at, reject_reason AS reason, country, TO_JSON_STRING(s) AS payload\nFROM `ehealth-pipeline.staging.covid_countries_stg` AS s\nWHERE reject_reason IS NOT NULL;\n\n-- 3) ANALYTICS: valid rows only, latest record per country per day\nCREATE OR REPLACE TABLE `ehealth-pipeline.analytics.covid_country_daily` AS\nSELECT\n  snapshot_date, country, iso2, iso3, continent, latitude, longitude,\n  population, cases, today_cases, deaths, today_deaths, recovered, active, critical, tests,\n  SAFE_DIVIDE(deaths, cases) * 100 AS case_fatality_pct,\n  source_updated_at,\n  run_id AS last_run_id,\n  CURRENT_TIMESTAMP() AS loaded_at\nFROM `ehealth-pipeline.staging.covid_countries_stg`\nWHERE reject_reason IS NULL\nQUALIFY ROW_NUMBER() OVER (\n  PARTITION BY snapshot_date, country ORDER BY ingested_at DESC\n) = 1;\n\n-- 4) RUN LOG: one row per raw run\nCREATE OR REPLACE TABLE `ehealth-pipeline.monitoring.pipeline_run_log` AS\nSELECT\n  run_id,\n  MIN(ingested_at) AS ingested_at,\n  COUNT(*) AS rows_extracted,\n  COUNTIF(reject_reason IS NULL) AS rows_valid,\n  COUNTIF(reject_reason IS NOT NULL) AS rows_rejected\nFROM `ehealth-pipeline.staging.covid_countries_stg`\nGROUP BY run_id;\n",
+                "dryRun": false,
+                "prefix": "#standardSQL",
+                "project": "ehealth-pipeline",
+                "timeoutMs": "60000",
+                "useQueryCache": false,
+                "useInt64Timestamp": false
+            },
+            "metadata": {
+                "designer": {
+                    "x": 901,
+                    "y": -4
+                },
+                "setupValidation": {
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    },
+                    "version": 1,
+                    "configuration": "7998b6f6aa24b923"
+                },
+                "restore": {
+                    "expect": {
+                        "dryRun": {
+                            "mode": "chose"
+                        },
+                        "prefix": {
+                            "mode": "chose",
+                            "label": "Runs the query using standard SQL"
+                        },
+                        "project": {
+                            "mode": "chose",
+                            "label": "ehealth-pipeline",
+                            "nested": [
+                                {
+                                    "help": "Specifies the **Default Dataset** to assume for any table in **Query** field. If not set, you must specify a table in the format `{datasetId}.{tableId}` in **Query** field.",
+                                    "name": "datasetId",
+                                    "type": "select",
+                                    "label": "Default Dataset ID",
+                                    "options": {
+                                        "store": "rpc://google-bigquery/1/listDatasets",
+                                        "nested": [
+                                            {
+                                                "help": "Specifying the **Table ID** will allow the module to generate an interface for mappable rows and improve your mapping experience.",
+                                                "name": "table",
+                                                "type": "select",
+                                                "label": "Table ID",
+                                                "options": "rpc://google-bigquery/1/listTables"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "datasetId": {
+                            "mode": "chose",
+                            "label": "Empty"
+                        },
+                        "useQueryCache": {
+                            "mode": "chose"
+                        },
+                        "useInt64Timestamp": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            },
+                            "label": "Alpha's Google connection (alphagideon001@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "project",
+                        "type": "select",
+                        "label": "Project ID",
+                        "required": true
+                    },
+                    {
+                        "name": "query",
+                        "type": "text",
+                        "label": "Query",
+                        "required": true
+                    },
+                    {
+                        "name": "prefix",
+                        "type": "select",
+                        "label": "Query Prefix",
+                        "validate": {
+                            "enum": [
+                                "#standardSQL"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "timeoutMs",
+                        "type": "uinteger",
+                        "label": "Timeout (in Milliseconds)"
+                    },
+                    {
+                        "name": "dryRun",
+                        "type": "boolean",
+                        "label": "Dry Run"
+                    },
+                    {
+                        "name": "useQueryCache",
+                        "type": "boolean",
+                        "label": "Use Query Cache"
+                    },
+                    {
+                        "name": "useInt64Timestamp",
+                        "type": "boolean",
+                        "label": "Use Int64 Timestamp"
+                    },
+                    {
+                        "name": "maximumBytesBilled",
+                        "type": "text",
+                        "label": "Maximum Bytes Billed",
+                        "validate": {
+                            "pattern": "^\\d*$"
+                        }
+                    },
+                    {
+                        "name": "datasetId",
+                        "type": "select",
+                        "label": "Default Dataset ID"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "kind",
+                        "type": "text",
+                        "label": "Kind"
+                    },
+                    {
+                        "name": "schema",
+                        "spec": [
+                            {
+                                "name": "fields",
+                                "spec": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Name"
+                                    },
+                                    {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                    },
+                                    {
+                                        "name": "mode",
+                                        "type": "text",
+                                        "label": "Mode"
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Fields"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Schema"
+                    },
+                    {
+                        "name": "jobReference",
+                        "spec": [
+                            {
+                                "name": "projectId",
+                                "type": "text",
+                                "label": "Project ID"
+                            },
+                            {
+                                "name": "jobId",
+                                "type": "text",
+                                "label": "Job ID"
+                            },
+                            {
+                                "name": "location",
+                                "type": "text",
+                                "label": "Location"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Job Reference"
+                    },
+                    {
+                        "name": "totalRows",
+                        "type": "uinteger",
+                        "label": "Total Rows"
+                    },
+                    {
+                        "name": "rows",
+                        "spec": [
+                            {
+                                "name": "f",
+                                "spec": [
+                                    {
+                                        "name": "v",
+                                        "type": "text",
+                                        "label": "Value"
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Fields"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Rows"
+                    },
+                    {
+                        "name": "totalBytesProcessed",
+                        "type": "uinteger",
+                        "label": "Total Bytes Processed"
+                    },
+                    {
+                        "name": "jobComplete",
+                        "type": "boolean",
+                        "label": "Job Complete"
+                    },
+                    {
+                        "name": "cacheHit",
+                        "type": "boolean",
+                        "label": "Cache Hit"
+                    },
+                    {
+                        "name": "mappableRows",
+                        "spec": {
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Mappable Rows"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 8,
+            "module": "google-bigquery:writeQuery",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 11405725
+            },
+            "mapper": {
+                "project": "ehealth-pipeline",
+                "query": "-- Automated data quality tests.\n-- Rebuilds monitoring.dq_results with the results for the LATEST run.\n-- (Sandbox blocks INSERT, so this table holds the latest results only, not history.)\n\nCREATE OR REPLACE TABLE `ehealth-pipeline.monitoring.dq_results` AS\nWITH\nlatest AS (\n  SELECT MAX(run_id) AS run_id\n  FROM `ehealth-pipeline.staging.covid_countries_stg`\n),\nraw_latest AS (\n  SELECT COUNT(*) AS n, MAX(ingested_at) AS ingested_at\n  FROM `ehealth-pipeline.raw.covid_raw_*`\n  WHERE _TABLE_SUFFIX = (SELECT run_id FROM latest)\n),\nstg_latest AS (\n  SELECT\n    COUNT(*) AS n,\n    COUNTIF(reject_reason IS NULL) AS valid_n,\n    COUNTIF(reject_reason IS NOT NULL) AS rejected_n\n  FROM `ehealth-pipeline.staging.covid_countries_stg`\n  WHERE run_id = (SELECT run_id FROM latest)\n),\nana AS (\n  SELECT\n    COUNT(*) AS n,\n    COUNTIF(last_run_id = (SELECT run_id FROM latest)) AS n_from_latest,\n    COUNTIF(country IS NULL OR snapshot_date IS NULL OR cases IS NULL) AS null_keys,\n    COUNTIF(cases < 0 OR deaths < 0) AS negative_counts,\n    COUNTIF(deaths > cases) AS deaths_gt_cases,\n    COUNTIF(snapshot_date > CURRENT_DATE()) AS future_dates,\n    COUNTIF(case_fatality_pct < 0 OR case_fatality_pct > 100) AS bad_cfr,\n    COUNTIF(population IS NULL OR population = 0) AS population_missing,\n    MAX(source_updated_at) AS max_source_updated\n  FROM `ehealth-pipeline.analytics.covid_country_daily`\n),\ndups AS (\n  SELECT COUNT(*) AS n\n  FROM (\n    SELECT snapshot_date, country\n    FROM `ehealth-pipeline.analytics.covid_country_daily`\n    GROUP BY snapshot_date, country\n    HAVING COUNT(*) > 1\n  )\n),\nschema_chk AS (\n  SELECT COUNT(*) AS missing_columns\n  FROM UNNEST([\n    'snapshot_date','country','iso2','iso3','continent','population',\n    'cases','deaths','recovered','active','case_fatality_pct','loaded_at'\n  ]) AS expected_col\n  WHERE expected_col NOT IN (\n    SELECT column_name\n    FROM `ehealth-pipeline.analytics.INFORMATION_SCHEMA.COLUMNS`\n    WHERE table_name = 'covid_country_daily'\n  )\n),\nprev_snap AS (\n  SELECT\n    MAX(snapshot_date) AS latest,\n    (SELECT MAX(snapshot_date)\n     FROM `ehealth-pipeline.analytics.covid_country_daily`\n     WHERE snapshot_date < (SELECT MAX(snapshot_date) FROM `ehealth-pipeline.analytics.covid_country_daily`)\n    ) AS previous\n  FROM `ehealth-pipeline.analytics.covid_country_daily`\n),\ncmp AS (\n  SELECT\n    COUNT(*) AS compared,\n    COUNTIF(c.cases != p.cases) AS changed\n  FROM `ehealth-pipeline.analytics.covid_country_daily` c\n  JOIN prev_snap ON c.snapshot_date = prev_snap.latest\n  JOIN `ehealth-pipeline.analytics.covid_country_daily` p\n    ON p.country = c.country AND p.snapshot_date = prev_snap.previous\n),\nm AS (\n  SELECT\n    (SELECT run_id FROM latest) AS run_id,\n    raw_latest.n AS raw_n,\n    raw_latest.ingested_at AS raw_ingested_at,\n    stg_latest.n AS stg_n,\n    stg_latest.valid_n,\n    stg_latest.rejected_n,\n    ana.*,\n    dups.n AS duplicate_keys,\n    schema_chk.missing_columns,\n    cmp.compared AS countries_compared,\n    cmp.changed AS countries_changed\n  FROM raw_latest, stg_latest, ana, dups, schema_chk, cmp\n)\nSELECT\n  m.run_id,\n  t.test_category,\n  t.test_name,\n  CASE WHEN t.passed THEN 'PASS' WHEN t.severity = 'WARN' THEN 'WARN' ELSE 'FAIL' END AS test_result,\n  t.expected,\n  t.actual,\n  CURRENT_TIMESTAMP() AS tested_at\nFROM m, UNNEST([\n  STRUCT('reconciliation' AS test_category, 'raw_rows_equal_staging_rows' AS test_name,\n         m.raw_n = m.stg_n AS passed, 'raw = staging' AS expected,\n         CONCAT('raw=', CAST(m.raw_n AS STRING), ', staging=', CAST(m.stg_n AS STRING)) AS actual,\n         'ERROR' AS severity),\n  STRUCT('reconciliation', 'analytics_rows_equal_valid_staging_rows',\n         m.n_from_latest = m.valid_n, 'analytics (this run) = valid staging rows',\n         CONCAT('analytics=', CAST(m.n_from_latest AS STRING), ', valid=', CAST(m.valid_n AS STRING)),\n         'ERROR'),\n  STRUCT('uniqueness', 'no_duplicate_country_per_day',\n         m.duplicate_keys = 0, '0 duplicate keys', CAST(m.duplicate_keys AS STRING), 'ERROR'),\n  STRUCT('completeness', 'no_nulls_in_key_columns',\n         m.null_keys = 0, '0 rows with NULL country/date/cases', CAST(m.null_keys AS STRING), 'ERROR'),\n  STRUCT('validity', 'no_negative_counts',\n         m.negative_counts = 0, '0 rows', CAST(m.negative_counts AS STRING), 'ERROR'),\n  STRUCT('validity', 'deaths_not_greater_than_cases',\n         m.deaths_gt_cases = 0, '0 rows', CAST(m.deaths_gt_cases AS STRING), 'ERROR'),\n  STRUCT('validity', 'no_future_dates',\n         m.future_dates = 0, '0 rows', CAST(m.future_dates AS STRING), 'ERROR'),\n  STRUCT('validity', 'fatality_pct_between_0_and_100',\n         m.bad_cfr = 0, '0 rows outside 0-100', CAST(m.bad_cfr AS STRING), 'ERROR'),\n  STRUCT('freshness', 'ingested_within_26_hours',\n         TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), m.raw_ingested_at, HOUR) <= 26,\n         'latest ingestion <= 26h ago',\n         CONCAT(CAST(TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), m.raw_ingested_at, HOUR) AS STRING), ' hours ago'),\n         'ERROR'),\n  STRUCT('freshness', 'source_updated_within_48_hours',\n         TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), m.max_source_updated, HOUR) <= 48,\n         'source data <= 48h old',\n         CONCAT(CAST(TIMESTAMP_DIFF(CURRENT_TIMESTAMP(), m.max_source_updated, HOUR) AS STRING), ' hours old'),\n         'ERROR'),\n  STRUCT('schema', 'expected_columns_present',\n         m.missing_columns = 0, '0 missing columns', CAST(m.missing_columns AS STRING), 'ERROR'),\n  STRUCT('freshness', 'counts_changed_vs_previous_snapshot',\n         m.countries_compared = 0 OR SAFE_DIVIDE(m.countries_changed, m.countries_compared) >= 0.01,\n         'at least 1% of countries changed vs previous snapshot (passes if no previous snapshot)',\n         CONCAT(CAST(m.countries_changed AS STRING), ' of ', CAST(m.countries_compared AS STRING), ' countries changed'),\n         'WARN'),\n  STRUCT('quality', 'rejection_rate_at_most_5_pct',\n         SAFE_DIVIDE(m.rejected_n, m.stg_n) <= 0.05, 'rejected <= 5% of rows',\n         CONCAT(CAST(ROUND(SAFE_DIVIDE(m.rejected_n, m.stg_n) * 100, 2) AS STRING), '%'),\n         'WARN'),\n  STRUCT('quality', 'population_missing_at_most_5_pct',\n         SAFE_DIVIDE(m.population_missing, m.n) <= 0.05, 'missing population <= 5% of rows',\n         CONCAT(CAST(ROUND(SAFE_DIVIDE(m.population_missing, m.n) * 100, 2) AS STRING), '%'),\n         'WARN')\n]) AS t;",
+                "prefix": "#standardSQL",
+                "timeoutMs": "60000",
+                "dryRun": false,
+                "useQueryCache": false,
+                "useInt64Timestamp": false
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1258,
+                    "y": -9
+                },
+                "setupValidation": {
+                    "version": 1,
+                    "configuration": "c9fc449dc9699683",
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    }
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "label": "Alpha's Google connection (alphagideon001@gmail.com)",
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            }
+                        }
+                    },
+                    "expect": {
+                        "project": {
+                            "mode": "chose",
+                            "nested": [
+                                {
+                                    "help": "Specifies the **Default Dataset** to assume for any table in **Query** field. If not set, you must specify a table in the format `{datasetId}.{tableId}` in **Query** field.",
+                                    "name": "datasetId",
+                                    "type": "select",
+                                    "label": "Default Dataset ID",
+                                    "options": {
+                                        "store": "rpc://google-bigquery/1/listDatasets",
+                                        "nested": [
+                                            {
+                                                "help": "Specifying the **Table ID** will allow the module to generate an interface for mappable rows and improve your mapping experience.",
+                                                "name": "table",
+                                                "type": "select",
+                                                "label": "Table ID",
+                                                "options": "rpc://google-bigquery/1/listTables"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "label": "ehealth-pipeline"
+                        },
+                        "prefix": {
+                            "mode": "chose",
+                            "label": "Runs the query using standard SQL"
+                        },
+                        "dryRun": {
+                            "mode": "chose"
+                        },
+                        "useQueryCache": {
+                            "mode": "chose"
+                        },
+                        "useInt64Timestamp": {
+                            "mode": "chose"
+                        },
+                        "datasetId": {
+                            "mode": "chose",
+                            "label": "Empty"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "project",
+                        "type": "select",
+                        "label": "Project ID",
+                        "required": true
+                    },
+                    {
+                        "name": "query",
+                        "type": "text",
+                        "label": "Query",
+                        "required": true
+                    },
+                    {
+                        "name": "prefix",
+                        "type": "select",
+                        "label": "Query Prefix",
+                        "validate": {
+                            "enum": [
+                                "#standardSQL"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "timeoutMs",
+                        "type": "uinteger",
+                        "label": "Timeout (in Milliseconds)"
+                    },
+                    {
+                        "name": "dryRun",
+                        "type": "boolean",
+                        "label": "Dry Run"
+                    },
+                    {
+                        "name": "useQueryCache",
+                        "type": "boolean",
+                        "label": "Use Query Cache"
+                    },
+                    {
+                        "name": "useInt64Timestamp",
+                        "type": "boolean",
+                        "label": "Use Int64 Timestamp"
+                    },
+                    {
+                        "name": "maximumBytesBilled",
+                        "type": "text",
+                        "label": "Maximum Bytes Billed",
+                        "validate": {
+                            "pattern": "^\\d*$"
+                        }
+                    },
+                    {
+                        "name": "datasetId",
+                        "type": "select",
+                        "label": "Default Dataset ID"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "kind",
+                        "type": "text",
+                        "label": "Kind"
+                    },
+                    {
+                        "name": "schema",
+                        "spec": [
+                            {
+                                "name": "fields",
+                                "spec": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Name"
+                                    },
+                                    {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                    },
+                                    {
+                                        "name": "mode",
+                                        "type": "text",
+                                        "label": "Mode"
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Fields"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Schema"
+                    },
+                    {
+                        "name": "jobReference",
+                        "spec": [
+                            {
+                                "name": "projectId",
+                                "type": "text",
+                                "label": "Project ID"
+                            },
+                            {
+                                "name": "jobId",
+                                "type": "text",
+                                "label": "Job ID"
+                            },
+                            {
+                                "name": "location",
+                                "type": "text",
+                                "label": "Location"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Job Reference"
+                    },
+                    {
+                        "name": "totalRows",
+                        "type": "uinteger",
+                        "label": "Total Rows"
+                    },
+                    {
+                        "name": "rows",
+                        "spec": [
+                            {
+                                "name": "f",
+                                "spec": [
+                                    {
+                                        "name": "v",
+                                        "type": "text",
+                                        "label": "Value"
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Fields"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Rows"
+                    },
+                    {
+                        "name": "totalBytesProcessed",
+                        "type": "uinteger",
+                        "label": "Total Bytes Processed"
+                    },
+                    {
+                        "name": "jobComplete",
+                        "type": "boolean",
+                        "label": "Job Complete"
+                    },
+                    {
+                        "name": "cacheHit",
+                        "type": "boolean",
+                        "label": "Cache Hit"
+                    },
+                    {
+                        "name": "mappableRows",
+                        "spec": {
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Mappable Rows"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 9,
+            "module": "google-bigquery:writeQuery",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 11405725
+            },
+            "mapper": {
+                "query": "-- Query for the LAST BigQuery module in the Make scenario (quality gate + report input).\n-- Statement 1 (gate): raises ERROR() if any test failed -> Make error route sends the alert.\n-- Statement 2 (summary): its result is what the module returns, so the Gemini module\n--   can map Rows > Fields > Value as the report input. Only reached when all tests pass.\n\n\nSELECT\n  IF(\n    COUNTIF(test_result = 'FAIL') > 0,\n    ERROR(CONCAT(\n      'DATA QUALITY FAILED for run ', ANY_VALUE(run_id), ': ',\n      STRING_AGG(IF(test_result = 'FAIL', CONCAT(test_name, ' (', actual, ')'), NULL), '; ')\n    )),\n    'all tests passed'\n  ) AS gate\nFROM `ehealth-pipeline.monitoring.dq_results`;\n\n\nSELECT TO_JSON_STRING(STRUCT(\n  (SELECT MAX(run_id) FROM `ehealth-pipeline.monitoring.dq_results`) AS run_id,\n\n  (SELECT AS STRUCT\n     COUNT(DISTINCT snapshot_date) AS snapshots_in_history,\n     COUNT(*) AS analytics_rows_total\n   FROM `ehealth-pipeline.analytics.covid_country_daily`) AS history,\n\n  (SELECT AS STRUCT\n     MAX(snapshot_date) AS latest_snapshot_date,\n     COUNT(*) AS countries,\n     SUM(cases) AS total_cases,\n     SUM(deaths) AS total_deaths,\n     ROUND(SAFE_DIVIDE(SUM(deaths), SUM(cases)) * 100, 2) AS global_case_fatality_pct\n   FROM `ehealth-pipeline.analytics.covid_country_daily`\n   WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM `ehealth-pipeline.analytics.covid_country_daily`)\n  ) AS latest_snapshot,\n\n  (WITH dates AS (\n     SELECT\n       MAX(snapshot_date) AS latest,\n       (SELECT MAX(snapshot_date)\n        FROM `ehealth-pipeline.analytics.covid_country_daily`\n        WHERE snapshot_date < (SELECT MAX(snapshot_date) FROM `ehealth-pipeline.analytics.covid_country_daily`)\n       ) AS previous\n     FROM `ehealth-pipeline.analytics.covid_country_daily`\n   ),\n   joined AS (\n     SELECT c.country, c.cases AS cases_latest, p.cases AS cases_previous\n     FROM `ehealth-pipeline.analytics.covid_country_daily` c\n     JOIN dates ON c.snapshot_date = dates.latest\n     JOIN `ehealth-pipeline.analytics.covid_country_daily` p\n       ON p.country = c.country AND p.snapshot_date = dates.previous\n   )\n   SELECT AS STRUCT\n     (SELECT previous FROM dates) AS previous_snapshot_date,\n     COUNT(*) AS countries_compared,\n     COUNTIF(cases_latest != cases_previous) AS countries_with_changed_cases,\n     SUM(cases_latest - cases_previous) AS total_cases_delta\n   FROM joined\n  ) AS change_vs_previous_snapshot,\n\n  (SELECT ARRAY_AGG(STRUCT(test_name, test_result, expected, actual))\n   FROM `ehealth-pipeline.monitoring.dq_results`) AS test_results,\n\n  (SELECT ARRAY_AGG(STRUCT(reason, n))\n   FROM (\n     SELECT reason, COUNT(*) AS n\n     FROM `ehealth-pipeline.monitoring.rejected_records`\n     GROUP BY reason\n   )) AS rejected_by_reason,\n\n  (SELECT ARRAY_AGG(STRUCT(continent, countries, total_cases, total_deaths) ORDER BY total_cases DESC)\n   FROM (\n     SELECT COALESCE(continent, 'Unknown') AS continent,\n            COUNT(*) AS countries, SUM(cases) AS total_cases, SUM(deaths) AS total_deaths\n     FROM `ehealth-pipeline.analytics.covid_country_daily`\n     WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM `ehealth-pipeline.analytics.covid_country_daily`)\n     GROUP BY continent\n   )) AS by_continent,\n\n  (SELECT ARRAY_AGG(STRUCT(country, cases, deaths, case_fatality_pct) ORDER BY cases DESC)\n   FROM (\n     SELECT country, cases, deaths, ROUND(case_fatality_pct, 2) AS case_fatality_pct\n     FROM `ehealth-pipeline.analytics.covid_country_daily`\n     WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM `ehealth-pipeline.analytics.covid_country_daily`)\n     ORDER BY cases DESC\n     LIMIT 5\n   )) AS top5_by_cases,\n\n  (SELECT ARRAY_AGG(STRUCT(country, cases, deaths, case_fatality_pct) ORDER BY case_fatality_pct DESC)\n   FROM (\n     SELECT country, cases, deaths, ROUND(case_fatality_pct, 2) AS case_fatality_pct\n     FROM `ehealth-pipeline.analytics.covid_country_daily`\n     WHERE snapshot_date = (SELECT MAX(snapshot_date) FROM `ehealth-pipeline.analytics.covid_country_daily`)\n       AND cases >= 100000\n     ORDER BY case_fatality_pct DESC\n     LIMIT 5\n   )) AS highest_fatality_among_large_outbreaks\n)) AS summary_json;\n",
+                "dryRun": false,
+                "prefix": "#standardSQL",
+                "project": "ehealth-pipeline",
+                "timeoutMs": "60000",
+                "useQueryCache": false,
+                "useInt64Timestamp": false
+            },
+            "metadata": {
+                "designer": {
+                    "x": 1582,
+                    "y": -10
+                },
+                "setupValidation": {
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    },
+                    "version": 1,
+                    "configuration": "55bd93fdcb3f0f4b"
+                },
+                "restore": {
+                    "expect": {
+                        "dryRun": {
+                            "mode": "chose"
+                        },
+                        "prefix": {
+                            "mode": "chose",
+                            "label": "Runs the query using standard SQL"
+                        },
+                        "project": {
+                            "mode": "chose",
+                            "label": "ehealth-pipeline",
+                            "nested": [
+                                {
+                                    "help": "Specifies the **Default Dataset** to assume for any table in **Query** field. If not set, you must specify a table in the format `{datasetId}.{tableId}` in **Query** field.",
+                                    "name": "datasetId",
+                                    "type": "select",
+                                    "label": "Default Dataset ID",
+                                    "options": {
+                                        "store": "rpc://google-bigquery/1/listDatasets",
+                                        "nested": [
+                                            {
+                                                "help": "Specifying the **Table ID** will allow the module to generate an interface for mappable rows and improve your mapping experience.",
+                                                "name": "table",
+                                                "type": "select",
+                                                "label": "Table ID",
+                                                "options": "rpc://google-bigquery/1/listTables"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "datasetId": {
+                            "mode": "chose"
+                        },
+                        "useQueryCache": {
+                            "mode": "chose"
+                        },
+                        "useInt64Timestamp": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            },
+                            "label": "Alpha's Google connection (alphagideon001@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "project",
+                        "type": "select",
+                        "label": "Project ID",
+                        "required": true
+                    },
+                    {
+                        "name": "query",
+                        "type": "text",
+                        "label": "Query",
+                        "required": true
+                    },
+                    {
+                        "name": "prefix",
+                        "type": "select",
+                        "label": "Query Prefix",
+                        "validate": {
+                            "enum": [
+                                "#standardSQL"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "timeoutMs",
+                        "type": "uinteger",
+                        "label": "Timeout (in Milliseconds)"
+                    },
+                    {
+                        "name": "dryRun",
+                        "type": "boolean",
+                        "label": "Dry Run"
+                    },
+                    {
+                        "name": "useQueryCache",
+                        "type": "boolean",
+                        "label": "Use Query Cache"
+                    },
+                    {
+                        "name": "useInt64Timestamp",
+                        "type": "boolean",
+                        "label": "Use Int64 Timestamp"
+                    },
+                    {
+                        "name": "maximumBytesBilled",
+                        "type": "text",
+                        "label": "Maximum Bytes Billed",
+                        "validate": {
+                            "pattern": "^\\d*$"
+                        }
+                    },
+                    {
+                        "name": "datasetId",
+                        "type": "select",
+                        "label": "Default Dataset ID"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "kind",
+                        "type": "text",
+                        "label": "Kind"
+                    },
+                    {
+                        "name": "schema",
+                        "spec": [
+                            {
+                                "name": "fields",
+                                "spec": [
+                                    {
+                                        "name": "name",
+                                        "type": "text",
+                                        "label": "Name"
+                                    },
+                                    {
+                                        "name": "type",
+                                        "type": "text",
+                                        "label": "Type"
+                                    },
+                                    {
+                                        "name": "mode",
+                                        "type": "text",
+                                        "label": "Mode"
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Fields"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Schema"
+                    },
+                    {
+                        "name": "jobReference",
+                        "spec": [
+                            {
+                                "name": "projectId",
+                                "type": "text",
+                                "label": "Project ID"
+                            },
+                            {
+                                "name": "jobId",
+                                "type": "text",
+                                "label": "Job ID"
+                            },
+                            {
+                                "name": "location",
+                                "type": "text",
+                                "label": "Location"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Job Reference"
+                    },
+                    {
+                        "name": "totalRows",
+                        "type": "uinteger",
+                        "label": "Total Rows"
+                    },
+                    {
+                        "name": "rows",
+                        "spec": [
+                            {
+                                "name": "f",
+                                "spec": [
+                                    {
+                                        "name": "v",
+                                        "type": "text",
+                                        "label": "Value"
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Fields"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Rows"
+                    },
+                    {
+                        "name": "totalBytesProcessed",
+                        "type": "uinteger",
+                        "label": "Total Bytes Processed"
+                    },
+                    {
+                        "name": "jobComplete",
+                        "type": "boolean",
+                        "label": "Job Complete"
+                    },
+                    {
+                        "name": "cacheHit",
+                        "type": "boolean",
+                        "label": "Cache Hit"
+                    },
+                    {
+                        "name": "mappableRows",
+                        "spec": {
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "Mappable Rows"
+                    }
+                ]
+            },
+            "onerror": [
+                {
+                    "id": 10,
+                    "module": "google-email:sendAnEmail",
+                    "version": 4,
+                    "parameters": {
+                        "__IMTCONN__": 11430331
+                    },
+                    "mapper": {
+                        "to": [
+                            "alphagideon001@gmail.com"
+                        ],
+                        "content": "The pipeline's quality gate failed.{{9.error.message}}",
+                        "subject": "ALERT: COVID pipeline data quality failed",
+                        "bodyType": "rawHtml"
+                    },
+                    "metadata": {
+                        "designer": {
+                            "x": 2820,
+                            "y": -22
+                        },
+                        "setupValidation": {
+                            "result": {
+                                "valid": true,
+                                "fields": []
+                            },
+                            "version": 1,
+                            "configuration": "43d0834b7358105d"
+                        },
+                        "restore": {
+                            "expect": {
+                                "cc": {
+                                    "mode": "chose"
+                                },
+                                "to": {
+                                    "mode": "chose",
+                                    "items": [
+                                        null
+                                    ]
+                                },
+                                "bcc": {
+                                    "mode": "chose"
+                                },
+                                "from": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                },
+                                "bodyType": {
+                                    "label": "Raw HTML"
+                                },
+                                "attachments": {
+                                    "mode": "chose"
+                                },
+                                "emailHeaders": {
+                                    "mode": "chose"
+                                }
+                            },
+                            "parameters": {
+                                "__IMTCONN__": {
+                                    "data": {
+                                        "scoped": "true",
+                                        "connection": "google-email"
+                                    },
+                                    "label": "Alpha's Gmail connection"
+                                }
+                            }
+                        },
+                        "parameters": [
+                            {
+                                "name": "__IMTCONN__",
+                                "type": "account:google-email",
+                                "label": "Connection",
+                                "required": true
+                            }
+                        ],
+                        "expect": [
+                            {
+                                "name": "to",
+                                "spec": {
+                                    "name": "value",
+                                    "type": "email",
+                                    "label": "Recipient email address",
+                                    "required": true,
+                                    "validate": true
+                                },
+                                "type": "array",
+                                "label": "To",
+                                "required": true
+                            },
+                            {
+                                "name": "subject",
+                                "type": "text",
+                                "label": "Subject"
+                            },
+                            {
+                                "name": "bodyType",
+                                "type": "select",
+                                "label": "Body type",
+                                "required": true,
+                                "validate": {
+                                    "enum": [
+                                        "rawHtml",
+                                        "collection"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "attachments",
+                                "spec": {
+                                    "name": "value",
+                                    "spec": [
+                                        {
+                                            "name": "filename",
+                                            "type": "filename",
+                                            "label": "File name",
+                                            "required": true,
+                                            "semantic": "file:name"
+                                        },
+                                        {
+                                            "name": "data",
+                                            "type": "buffer",
+                                            "label": "Data",
+                                            "required": true,
+                                            "semantic": "file:data"
+                                        }
+                                    ],
+                                    "type": "collection",
+                                    "label": "Attachment"
+                                },
+                                "type": "array",
+                                "label": "Attachments"
+                            },
+                            {
+                                "name": "from",
+                                "type": "select",
+                                "label": "From"
+                            },
+                            {
+                                "name": "cc",
+                                "spec": {
+                                    "name": "value",
+                                    "type": "email",
+                                    "label": "Recipient email address"
+                                },
+                                "type": "array",
+                                "label": "CC recipients"
+                            },
+                            {
+                                "name": "bcc",
+                                "spec": {
+                                    "name": "value",
+                                    "type": "email",
+                                    "label": "Recipient email address"
+                                },
+                                "type": "array",
+                                "label": "BCC recipients"
+                            },
+                            {
+                                "name": "emailHeaders",
+                                "spec": {
+                                    "name": "value",
+                                    "spec": [
+                                        {
+                                            "name": "key",
+                                            "type": "text",
+                                            "label": "Key",
+                                            "required": true
+                                        },
+                                        {
+                                            "name": "value",
+                                            "type": "text",
+                                            "label": "Value"
+                                        }
+                                    ],
+                                    "type": "collection",
+                                    "label": "Email header"
+                                },
+                                "type": "array",
+                                "label": "Additional email headers"
+                            },
+                            {
+                                "name": "content",
+                                "type": "text",
+                                "label": "Content"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "id": 15,
+            "module": "gemini-ai:createACompletionGeminiPro",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 11438923
+            },
+            "mapper": {
+                "model": "gemini-3.8-flash",
+                "contents": [
+                    {
+                        "role": "user",
+                        "parts": [
+                            {
+                                "text": "Pipeline summary JSON:\n{{9.rows[].f[].v}}",
+                                "type": "text"
+                            }
+                        ]
+                    }
+                ],
+                "generationConfig": {
+                    "imageConfig": {},
+                    "thinkingConfig": {
+                        "thinking_level": "low"
+                    }
+                },
+                "system_instruction": {
+                    "parts": [
+                        {
+                            "text": "Analyze the pipeline JSON. Write a plain-text report ≤200 words using only numbers in the JSON; never invent figures. Totals are cumulative, not daily. Mention trends only when supported by change_vs_previous_snapshot. If countries_with_changed_cases is 0 or very low, flag possible stale source despite passing freshness timestamps.\n\nFormat:\n\nVerdict: HEALTHY, WARNING, or FAILING + reason.\n\nData quality summary: ≤3 short lines.\n\nAnomalies: ≤3 one-sentence items, or \"None found\".\n\nInsights: exactly 3 one-sentence items.\n\nRecommendations: exactly 3 specific actions."
+                        }
+                    ]
+                }
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2345,
+                    "y": 90
+                },
+                "setupValidation": {
+                    "version": 1,
+                    "configuration": "255dd14b043ef01e",
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    }
+                },
+                "restore": {
+                    "expect": {
+                        "model": {
+                            "mode": "chose",
+                            "label": "Gemini 3.8 Flash"
+                        },
+                        "contents": {
+                            "mode": "chose",
+                            "items": [
+                                {
+                                    "role": {
+                                        "mode": "chose",
+                                        "label": "User"
+                                    },
+                                    "parts": {
+                                        "mode": "chose",
+                                        "items": [
+                                            {
+                                                "type": {
+                                                    "mode": "chose",
+                                                    "label": "Text"
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        "serviceTier": {
+                            "mode": "chose",
+                            "label": "Empty"
+                        },
+                        "url_context": {
+                            "mode": "chose"
+                        },
+                        "code_execution": {
+                            "mode": "chose"
+                        },
+                        "safetySettings": {
+                            "mode": "chose"
+                        },
+                        "generationConfig": {
+                            "nested": {
+                                "imageConfig": {
+                                    "nested": {
+                                        "imageSize": {
+                                            "mode": "chose",
+                                            "label": "Empty"
+                                        }
+                                    }
+                                },
+                                "stopSequences": {
+                                    "mode": "chose"
+                                },
+                                "thinkingConfig": {
+                                    "nested": {
+                                        "thinking_level": {
+                                            "mode": "chose",
+                                            "label": "Low"
+                                        },
+                                        "include_thoughts": {
+                                            "mode": "chose"
+                                        }
+                                    }
+                                },
+                                "mediaResolution": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                },
+                                "responseMimeType": {
+                                    "mode": "chose",
+                                    "label": "Empty"
+                                },
+                                "responseModalities": {
+                                    "mode": "chose"
+                                }
+                            }
+                        },
+                        "system_instruction": {
+                            "nested": {
+                                "parts": {
+                                    "mode": "chose",
+                                    "items": [
+                                        null
+                                    ]
+                                }
+                            }
+                        },
+                        "google_maps_context": {
+                            "mode": "chose"
+                        },
+                        "google_search_context": {
+                            "mode": "chose"
+                        },
+                        "file_search_store_context": {
+                            "mode": "chose"
+                        },
+                        "function_declarations_context": {
+                            "mode": "chose"
+                        }
+                    },
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "gemini-ai-q9zyjp"
+                            },
+                            "label": "Alpha's Gemini AI connection"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:gemini-ai-q9zyjp",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "model",
+                        "type": "select",
+                        "label": "AI Model",
+                        "required": true
+                    },
+                    {
+                        "name": "contents",
+                        "spec": [
+                            {
+                                "name": "role",
+                                "type": "select",
+                                "label": "Role",
+                                "options": [
+                                    {
+                                        "label": "User",
+                                        "value": "user"
+                                    },
+                                    {
+                                        "label": "Model",
+                                        "value": "model"
+                                    }
+                                ],
+                                "required": true
+                            },
+                            {
+                                "name": "parts",
+                                "spec": [
+                                    {
+                                        "name": "type",
+                                        "type": "select",
+                                        "label": "Message Type",
+                                        "options": [
+                                            {
+                                                "label": "Text",
+                                                "value": "text",
+                                                "nested": [
+                                                    {
+                                                        "name": "text",
+                                                        "type": "text",
+                                                        "label": "Text",
+                                                        "required": true
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "label": "File",
+                                                "value": "file",
+                                                "nested": [
+                                                    {
+                                                        "name": "file_data",
+                                                        "spec": [
+                                                            {
+                                                                "name": "mime_type",
+                                                                "type": "text",
+                                                                "label": "Mime Type",
+                                                                "required": true
+                                                            },
+                                                            {
+                                                                "help": "You can use public or signed URLs as input by using the URLs.",
+                                                                "name": "file_uri",
+                                                                "type": "text",
+                                                                "label": "File URI",
+                                                                "required": true
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "File Data",
+                                                        "required": true
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "label": "Function Call",
+                                                "value": "functionCall",
+                                                "nested": [
+                                                    {
+                                                        "name": "functionCall",
+                                                        "spec": [
+                                                            {
+                                                                "help": "The name of the function to call.",
+                                                                "name": "name",
+                                                                "type": "text",
+                                                                "label": "Name",
+                                                                "required": true,
+                                                                "validate": {
+                                                                    "max": 64
+                                                                }
+                                                            },
+                                                            {
+                                                                "help": "The function parameters and values in JSON object format.",
+                                                                "name": "args",
+                                                                "type": "json",
+                                                                "label": "Arguments"
+                                                            },
+                                                            {
+                                                                "help": "The unique ID of the function call.",
+                                                                "name": "id",
+                                                                "type": "text",
+                                                                "label": "Function Call ID"
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Function Call"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "label": "Function Response",
+                                                "value": "functionResponse",
+                                                "nested": [
+                                                    {
+                                                        "name": "functionResponse",
+                                                        "spec": [
+                                                            {
+                                                                "help": "The name of the function to call.",
+                                                                "name": "name",
+                                                                "type": "text",
+                                                                "label": "Name",
+                                                                "required": true,
+                                                                "validate": {
+                                                                    "max": 64
+                                                                }
+                                                            },
+                                                            {
+                                                                "help": "The function response in JSON object format.",
+                                                                "name": "response",
+                                                                "type": "json",
+                                                                "label": "Response",
+                                                                "required": true
+                                                            }
+                                                        ],
+                                                        "type": "collection",
+                                                        "label": "Function Response"
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "thoughtSignature",
+                                        "type": "text",
+                                        "label": "Thought Signature"
+                                    }
+                                ],
+                                "type": "array",
+                                "label": "Parts",
+                                "required": true
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Messages",
+                        "required": true
+                    },
+                    {
+                        "name": "system_instruction",
+                        "spec": [
+                            {
+                                "name": "parts",
+                                "spec": {
+                                    "name": "value",
+                                    "spec": [
+                                        {
+                                            "name": "text",
+                                            "type": "text",
+                                            "label": "Value"
+                                        }
+                                    ],
+                                    "type": "collection",
+                                    "label": "Prompt"
+                                },
+                                "type": "array",
+                                "label": "Prompts"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "System Instructions"
+                    },
+                    {
+                        "name": "safetySettings",
+                        "spec": [
+                            {
+                                "name": "category",
+                                "type": "select",
+                                "label": "Category",
+                                "options": [
+                                    {
+                                        "label": "Harassment content",
+                                        "value": "HARM_CATEGORY_HARASSMENT"
+                                    },
+                                    {
+                                        "label": "Hate speech and content",
+                                        "value": "HARM_CATEGORY_HATE_SPEECH"
+                                    },
+                                    {
+                                        "label": "Sexually explicit content.",
+                                        "value": "HARM_CATEGORY_SEXUALLY_EXPLICIT"
+                                    },
+                                    {
+                                        "label": "Dangerous content:",
+                                        "value": "HARM_CATEGORY_DANGEROUS_CONTENT"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "threshold",
+                                "type": "select",
+                                "label": "Threshold",
+                                "options": [
+                                    {
+                                        "label": "Block low and above.",
+                                        "value": "BLOCK_LOW_AND_ABOVE"
+                                    },
+                                    {
+                                        "label": "Block medium and above.",
+                                        "value": "BLOCK_MEDIUM_AND_ABOVE"
+                                    },
+                                    {
+                                        "label": "Block only high.",
+                                        "value": "BLOCK_ONLY_HIGH"
+                                    },
+                                    {
+                                        "label": "Block none.",
+                                        "value": "BLOCK_NONE"
+                                    }
+                                ]
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Safety Settings"
+                    },
+                    {
+                        "name": "generationConfig",
+                        "spec": [
+                            {
+                                "name": "stopSequences",
+                                "spec": {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Stop Sequence"
+                                },
+                                "type": "array",
+                                "label": "Stop Sequences"
+                            },
+                            {
+                                "name": "responseModalities",
+                                "type": "select",
+                                "label": "Response Modalities",
+                                "multiple": true,
+                                "validate": {
+                                    "enum": [
+                                        "text",
+                                        "image"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "maxOutputTokens",
+                                "type": "number",
+                                "label": "Max Output Tokens"
+                            },
+                            {
+                                "name": "temperature",
+                                "type": "number",
+                                "label": "Temperature",
+                                "validate": {
+                                    "max": 1,
+                                    "min": 0
+                                }
+                            },
+                            {
+                                "name": "topP",
+                                "type": "number",
+                                "label": "Top P",
+                                "validate": {
+                                    "max": 1,
+                                    "min": 0
+                                }
+                            },
+                            {
+                                "name": "topK",
+                                "type": "number",
+                                "label": "Top K"
+                            },
+                            {
+                                "name": "thinkingConfig",
+                                "spec": [
+                                    {
+                                        "name": "thinkingBudget",
+                                        "type": "number",
+                                        "label": "Thinking Budget"
+                                    },
+                                    {
+                                        "name": "include_thoughts",
+                                        "type": "boolean",
+                                        "label": "Include Thoughts"
+                                    },
+                                    {
+                                        "name": "thinking_level",
+                                        "type": "select",
+                                        "label": "Thinking Level",
+                                        "validate": {
+                                            "enum": [
+                                                "low",
+                                                "high"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Thinking Config"
+                            },
+                            {
+                                "name": "mediaResolution",
+                                "type": "select",
+                                "label": "Media Resolution",
+                                "validate": {
+                                    "enum": [
+                                        "media_resolution_low",
+                                        "media_resolution_medium",
+                                        "media_resolution_high"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "imageConfig",
+                                "spec": [
+                                    {
+                                        "name": "imageSize",
+                                        "type": "select",
+                                        "label": "Image Size",
+                                        "validate": {
+                                            "enum": [
+                                                "1K",
+                                                "2K",
+                                                "4K"
+                                            ]
+                                        }
+                                    }
+                                ],
+                                "type": "collection",
+                                "label": "Image Configuration"
+                            },
+                            {
+                                "name": "responseMimeType",
+                                "type": "select",
+                                "label": "Response Format"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Generation configurations"
+                    },
+                    {
+                        "name": "tools",
+                        "type": "any",
+                        "label": "Tools"
+                    },
+                    {
+                        "name": "tool_config",
+                        "type": "any",
+                        "label": "Tool Config"
+                    },
+                    {
+                        "name": "function_declarations_context",
+                        "type": "boolean",
+                        "label": "Function Declarations Grounding"
+                    },
+                    {
+                        "name": "url_context",
+                        "type": "boolean",
+                        "label": "URL Context"
+                    },
+                    {
+                        "name": "google_search_context",
+                        "type": "boolean",
+                        "label": "Google Search Grounding"
+                    },
+                    {
+                        "name": "code_execution",
+                        "type": "boolean",
+                        "label": "Code Execution"
+                    },
+                    {
+                        "name": "google_maps_context",
+                        "type": "boolean",
+                        "label": "Google Maps Grounding"
+                    },
+                    {
+                        "name": "file_search_store_context",
+                        "type": "boolean",
+                        "label": "File Search Store Context"
+                    },
+                    {
+                        "name": "serviceTier",
+                        "type": "select",
+                        "label": "Inference Service Tier"
+                    }
+                ],
+                "advanced": true
+            },
+            "onerror": [
+                {
+                    "id": 17,
+                    "module": "builtin:Ignore",
+                    "version": 1,
+                    "parameters": {},
+                    "mapper": {},
+                    "metadata": {
+                        "designer": {
+                            "x": 2645,
+                            "y": 90
+                        },
+                        "restore": {}
+                    }
+                }
+            ]
+        },
+        {
+            "id": 18,
+            "module": "google-email:sendAnEmail",
+            "version": 4,
+            "parameters": {
+                "__IMTCONN__": 11430331
+            },
+            "mapper": {
+                "to": [
+                    "alphagideon001@gmail.com"
+                ],
+                "subject": "Daily COVID pipeline data quality report",
+                "bodyType": "rawHtml",
+                "content": "<pre style=\"white-space:pre-wrap;font-family:Arial,sans-serif\">{{15.result}}</pre>"
+            },
+            "metadata": {
+                "designer": {
+                    "x": 2715,
+                    "y": 307
+                },
+                "setupValidation": {
+                    "version": 1,
+                    "configuration": "fb70556739920ae9",
+                    "result": {
+                        "valid": true,
+                        "fields": []
+                    }
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "label": "Alpha's Gmail connection (alphagideon001@gmail.com)",
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-email"
+                            }
+                        }
+                    },
+                    "expect": {
+                        "to": {
+                            "mode": "chose",
+                            "items": [
+                                null
+                            ]
+                        },
+                        "bodyType": {
+                            "label": "Raw HTML"
+                        },
+                        "attachments": {
+                            "mode": "chose"
+                        },
+                        "from": {
+                            "mode": "chose",
+                            "label": "Empty"
+                        },
+                        "cc": {
+                            "mode": "chose"
+                        },
+                        "bcc": {
+                            "mode": "chose"
+                        },
+                        "emailHeaders": {
+                            "mode": "chose"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-email",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "to",
+                        "type": "array",
+                        "label": "To",
+                        "required": true,
+                        "spec": {
+                            "type": "email",
+                            "label": "Recipient email address",
+                            "required": true,
+                            "validate": true,
+                            "name": "value"
+                        }
+                    },
+                    {
+                        "name": "subject",
+                        "type": "text",
+                        "label": "Subject"
+                    },
+                    {
+                        "name": "bodyType",
+                        "type": "select",
+                        "label": "Body type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "rawHtml",
+                                "collection"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "attachments",
+                        "type": "array",
+                        "label": "Attachments",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "name": "filename",
+                                    "type": "filename",
+                                    "label": "File name",
+                                    "required": true,
+                                    "semantic": "file:name"
+                                },
+                                {
+                                    "name": "data",
+                                    "type": "buffer",
+                                    "label": "Data",
+                                    "required": true,
+                                    "semantic": "file:data"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Attachment",
+                            "name": "value"
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "type": "select",
+                        "label": "From"
+                    },
+                    {
+                        "name": "cc",
+                        "type": "array",
+                        "label": "CC recipients",
+                        "spec": {
+                            "type": "email",
+                            "label": "Recipient email address",
+                            "name": "value"
+                        }
+                    },
+                    {
+                        "name": "bcc",
+                        "type": "array",
+                        "label": "BCC recipients",
+                        "spec": {
+                            "type": "email",
+                            "label": "Recipient email address",
+                            "name": "value"
+                        }
+                    },
+                    {
+                        "name": "emailHeaders",
+                        "type": "array",
+                        "label": "Additional email headers",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "name": "key",
+                                    "type": "text",
+                                    "label": "Key",
+                                    "required": true
+                                },
+                                {
+                                    "name": "value",
+                                    "type": "text",
+                                    "label": "Value"
+                                }
+                            ],
+                            "type": "collection",
+                            "label": "Email header",
+                            "name": "value"
+                        }
+                    },
+                    {
+                        "name": "content",
+                        "type": "text",
+                        "label": "Content"
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu1.make.com",
+        "notes": []
+    }
+}
