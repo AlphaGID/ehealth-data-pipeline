@@ -3,8 +3,9 @@
 An automated data pipeline that extracts country-level COVID-19 statistics from a public API, loads them into Google BigQuery, transforms and validates them with SQL, tests data quality automatically after every run, and alerts by email when a test fails. A GPT-based data quality report is the final bonus step (in progress).
 
 Built as an assessment for the **Data Engineer** role at eHealth4everyone.
+Demo Video: https://drive.google.com/file/d/1KrxfUHutc3Z5w2jX3Sk8JzzhfOvXvjW7/view?usp=sharing
 
-> **Status:** work in progress. See the [Progress checklist](#progress-checklist).
+> **Status:** Complete . See the [Progress checklist](#progress-checklist).
 
 ---
 
@@ -175,9 +176,9 @@ The BigQuery **sandbox blocks DML** (`INSERT`, `UPDATE`, `DELETE`, `MERGE`) unle
 - [x] **Phase 4** Transformation SQL: staging, rejected records, analytics, run log
 - [x] **Phase 5** Automated data quality tests and `dq_results`
 - [x] **Phase 6** Full scenario in Make, quality gate, email alert, daily 06:00 schedule
-- [ ] **Phase 7** AI data quality report (bonus): report generated and emailed; finishing email formatting and retry after a Gemini overload error
-- [ ] **Phase 8** Architecture diagram export, Make blueprint export, design document
-- [ ] **Phase 9** Demo video
+- [x] **Phase 7** AI data quality report (bonus): report generated and emailed; finishing email formatting and retry after a Gemini overload error
+- [x] **Phase 8** Architecture diagram export, Make blueprint export, design document
+- [x] **Phase 9** Demo video
 
 ## Challenges and how they were solved
 
