@@ -1,23 +1,14 @@
 # eHealth COVID-19 Data Pipeline (No-Code ETL/ELT)
 
-An automated data pipeline that extracts country-level COVID-19 statistics from a public API, loads them into Google BigQuery, transforms and validates them with SQL, tests data quality automatically after every run, and alerts by email when a test fails. A GPT-based data quality report is the final bonus step (in progress).
+An automated data pipeline that extracts country-level COVID-19 statistics from a public API, loads them into Google BigQuery, transforms and validates them with SQL, tests data quality automatically after every run, and alerts by email when a test fails. An AI-generated (Gemini) daily data quality report is emailed after each run.
 
-Built as an assessment for the **Data Engineer** role at eHealth4everyone.
-Demo Video: https://drive.google.com/file/d/1KrxfUHutc3Z5w2jX3Sk8JzzhfOvXvjW7/view?usp=sharing
-
-> **Status:** Complete . See the [Progress checklist](#progress-checklist).
+> **Status:** complete. See the [Progress checklist](#progress-checklist).
 
 ---
 
-## Objective
+## Overview
 
-Design and implement an automated data pipeline using a no-code tool that:
-
-1. Extracts data from a public API
-2. Loads it into a data warehouse
-3. Automates the ETL process
-4. Includes automated testing for data accuracy and integrity
-5. *(Bonus)* Uses GPT-4 to generate data quality reports or insights
+A personal data engineering project showing a full pipeline built with a no-code orchestrator: extraction from a public API, loading into a cloud warehouse, SQL transformation, automated data quality testing with alerting, and an AI-written daily quality report.
 
 ## Tools and choices
 
@@ -151,7 +142,7 @@ The daily freshness tests passed, yet a comparison of consecutive snapshots show
 - Only a small summary is sent to the model, not raw rows: cheaper, faster, and grounded in computed figures.
 - The prompt is short on purpose. A longer prompt timed out on the free tier (`ModuleTimeoutError`); a shorter prompt with thinking set to low succeeds.
 - The report step is optional: an Ignore error handler keeps the data pipeline green if the model is slow or returns an overload error (HTTP 503 was observed).
-- GPT-4 was the brief's suggestion; Gemini was used because an OpenAI API key needs prepaid credit and Gemini has a free tier.
+- Gemini was used because it has a free tier; the same design works with other LLM providers such as OpenAI.
 
 ## Known limitations (sandbox)
 
@@ -176,9 +167,10 @@ The BigQuery **sandbox blocks DML** (`INSERT`, `UPDATE`, `DELETE`, `MERGE`) unle
 - [x] **Phase 4** Transformation SQL: staging, rejected records, analytics, run log
 - [x] **Phase 5** Automated data quality tests and `dq_results`
 - [x] **Phase 6** Full scenario in Make, quality gate, email alert, daily 06:00 schedule
-- [x] **Phase 7** AI data quality report (bonus): report generated and emailed; finishing email formatting and retry after a Gemini overload error
-- [x] **Phase 8** Architecture diagram export, Make blueprint export, design document
-- [x] **Phase 9** Demo video
+- [x] **Phase 7** AI data quality report (bonus): Gemini report generated and emailed daily, with an optional-step error handler
+- [x] **Phase 8a** Design document (`docs/pipeline_design.md`)
+- [ ] **Phase 8b** Make blueprint export and screenshots
+- [ ] **Phase 9** Demo video
 
 ## Challenges and how they were solved
 
@@ -210,7 +202,7 @@ ehealth-data-pipeline/
 │   ├── 07_report_input.sql       # summary JSON for the AI report
 │   └── 08_gate_and_report_input.sql  # gate + summary, the query the last Make BigQuery module runs
 ├── workflow/                     # Make blueprint JSON (Phase 8)
-├── docs/                         # sample AI report, design document (Phase 8)
+├── docs/                         # design document, sample AI report
 └── screenshots/                  # evidence for the demo and README
 ```
 
